@@ -3,16 +3,16 @@ version: '3.8'
 services:
   mysql-service:
     image: mysql:8.4
-    container_name: <valor>
+    container_name: mysql-container
     environment:
-      MYSQL_ROOT_PASSWORD: <valor>
-      MYSQL_DATABASE: <valor>
-      MYSQL_USER: <valor>
-      MYSQL_PASSWORD: <valor>
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: midatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     volumes:
-      - <valor>:<valor>
+      - mysql-vol:/var/lib/mysql
     networks:
-      - <valor>
+      - net-wp
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 20s
@@ -22,30 +22,30 @@ services:
 
   wordpress-service:
     image: wordpress:6
-    container_name: <valor>
+    container_name: wordpress-container
     ports:
-      - <valor>:<valor>
+      - 8080:80
     environment:
-      WORDPRESS_DB_HOST: <valor>
-      WORDPRESS_DB_USER: <valor>
-      WORDPRESS_DB_PASSWORD: <valor>
-      WORDPRESS_DB_NAME: <valor>
+      WORDPRESS_DB_HOST: mysql-container
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_DB_NAME: midatabase
     volumes:
-      - <valor>:<valor>
+      - wordpress-vol:/var/www/html
     networks:
-      - <valor>
+      - net-wp
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 20s
       timeout: 20s
       retries: 10
       start_period: 50s
-    restart: <valor>
+    restart: always
     depends_on:
       mysql-service:
-        condition: <valor>
+        condition: service_healthy
 volumes:
-  mysql-data:
+  mysql-vol:
   wordpress-vol:
 
 networks:
